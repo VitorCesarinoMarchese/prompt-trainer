@@ -11,6 +11,7 @@ static void set_outcome_none(TuiInputOutcome *outcome) {
 void tui_input_init(TuiInputState *state) {
     memset(state, 0, sizeof(*state));
     state->history_index = -1;
+    state->view_top_row = 0;
 }
 
 static void load_history_entry(TuiInputState *state, int index) {
@@ -40,6 +41,7 @@ static void clear_input(TuiInputState *state) {
     state->buffer[0] = '\0';
     state->len = 0;
     state->cursor = 0;
+    state->view_top_row = 0;
     state->history_index = -1;
 }
 
@@ -187,4 +189,48 @@ int tui_input_visual_info(const TuiInputState *state, int width, TuiWrapCursorIn
         return -1;
     }
     return tui_textwrap_cursor_info(state->buffer, state->len, state->cursor, width, out);
+}
+
+void tui_input_adjust_viewport(TuiInputState *state, int width, int visible_rows) {
+    TuiWrapCursorInfo visual;
+    int max_top;
+
+    if (state == NULL) {
+        return;
+    }
+    if (visible_rows < 1) {
+        visible_rows = 1;
+    }
+    if (tui_input_visual_info(state, width, &visual) != 0) {
+        state->view_top_row = 0;
+        return;
+    }
+
+    max_top = visual.total_rows - visible_rows;
+    if (max_top < 0) {
+        max_top = 0;
+    }
+
+    if (visual.cursor_row < state->view_top_row) {
+        state->view_top_row = visual.cursor_row;
+    } else if (visual.cursor_row >= state->view_top_row + visible_rows) {
+        state->view_top_row = visual.cursor_row - visible_rows + 1;
+    }
+
+    if (state->view_top_row < 0) {
+        state->view_top_row = 0;
+    }
+    if (state->view_top_row > max_top) {
+        state->view_top_row = max_top;
+    }
+}
+
+int tui_input_view_top_row(const TuiInputState *state) {
+    if (state == NULL) {
+        return 0;
+    }
+    if (state->view_top_row < 0) {
+        return 0;
+    }
+    return state->view_top_row;
 }

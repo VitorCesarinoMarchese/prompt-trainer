@@ -35,6 +35,7 @@ typedef struct {
     char buffer[TUI_MAX_INPUT];
     size_t len;
     size_t cursor;
+    int view_top_row;
     char history[TUI_MAX_INPUT_HISTORY][TUI_MAX_INPUT];
     size_t history_count;
     int history_index;
@@ -44,5 +45,7 @@ void tui_input_init(TuiInputState *state);
 int tui_input_handle_key(TuiInputState *state, int key, TuiInputOutcome *outcome, char *submitted, size_t submitted_cap);
 int tui_input_line_count(const TuiInputState *state);
 int tui_input_visual_info(const TuiInputState *state, int width, TuiWrapCursorInfo *out);
+void tui_input_adjust_viewport(TuiInputState *state, int width, int visible_rows);
+int tui_input_view_top_row(const TuiInputState *state);
 
 #endif

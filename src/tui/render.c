@@ -76,9 +76,15 @@ static void draw_input_panel(const TuiLayout *layout, const TuiInputState *input
         visual.total_rows = 1;
     }
     total_lines = visual.total_rows;
-
-    if (total_lines > visible_lines) {
+    start_row = tui_input_view_top_row(input);
+    if (start_row < 0) {
+        start_row = 0;
+    }
+    if (start_row > total_lines - visible_lines) {
         start_row = total_lines - visible_lines;
+    }
+    if (start_row < 0) {
+        start_row = 0;
     }
 
     for (idx = 0; idx < input->len; ++idx) {

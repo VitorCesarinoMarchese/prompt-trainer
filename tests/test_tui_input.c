@@ -65,6 +65,17 @@ int main(void) {
     expect_true(visual.cursor_row == 2, "visual row should track wrapped cursor");
     expect_true(visual.cursor_col == 0, "visual col should reset after hard wrap");
     expect_true(visual.total_rows == 3, "visual total rows should include wraps");
+    tui_input_adjust_viewport(&state, 5, 2);
+    expect_true(tui_input_view_top_row(&state) == 1, "viewport should follow wrapped cursor");
+
+    tui_input_handle_key(&state, TUI_KEY_LEFT, &outcome, submitted, sizeof(submitted));
+    tui_input_handle_key(&state, TUI_KEY_LEFT, &outcome, submitted, sizeof(submitted));
+    tui_input_handle_key(&state, TUI_KEY_LEFT, &outcome, submitted, sizeof(submitted));
+    tui_input_handle_key(&state, TUI_KEY_LEFT, &outcome, submitted, sizeof(submitted));
+    tui_input_handle_key(&state, TUI_KEY_LEFT, &outcome, submitted, sizeof(submitted));
+    tui_input_handle_key(&state, TUI_KEY_LEFT, &outcome, submitted, sizeof(submitted));
+    tui_input_adjust_viewport(&state, 5, 2);
+    expect_true(tui_input_view_top_row(&state) == 0, "viewport should clamp when cursor moves up");
 
     memset(&outcome, 0, sizeof(outcome));
     tui_input_handle_key(&state, 3, &outcome, submitted, sizeof(submitted));

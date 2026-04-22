@@ -106,6 +106,7 @@ int tui_run(void) {
 
         getmaxyx(stdscr, rows, cols);
         tui_layout_compute(rows, cols, tui_input_line_count(&input), &layout);
+        tui_input_adjust_viewport(&input, layout.input_inner_w, layout.input_inner_h);
         output_width = layout.output_inner_w > 0 ? layout.output_inner_w : 1;
         output_rows = layout.output_inner_h > 0 ? layout.output_inner_h : 1;
         max_scroll = tui_history_max_scroll_rows(&history, output_width, output_rows);
