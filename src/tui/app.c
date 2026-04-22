@@ -101,10 +101,17 @@ int tui_run(void) {
         TuiInputOutcome outcome;
         char submitted[TUI_MAX_INPUT];
         int max_scroll;
+        int output_width;
+        int output_rows;
 
         getmaxyx(stdscr, rows, cols);
         tui_layout_compute(rows, cols, tui_input_line_count(&input), &layout);
-        max_scroll = history.count > 0 ? (int)history.count - 1 : 0;
+        output_width = layout.output_inner_w > 0 ? layout.output_inner_w : 1;
+        output_rows = layout.output_inner_h > 0 ? layout.output_inner_h : 1;
+        max_scroll = tui_history_max_scroll_rows(&history, output_width, output_rows);
+        if (history.scroll > max_scroll) {
+            history.scroll = max_scroll;
+        }
 
         if (tui_async_poll(&async_state, &result) == 1) {
             char line[TUI_MAX_MESSAGE_TEXT];
@@ -118,12 +125,14 @@ int tui_run(void) {
         }
 
         if (tui_async_is_busy(&async_state)) {
-            snprintf(status_text, sizeof(status_text), "Evaluating... %c | queue %d | PgUp/PgDn + Up/Down scroll | Ctrl+L clear",
+            snprintf(status_text, sizeof(status_text), "Evaluating... %c | queue %d | %s",
                      spinner_chars[spinner % 4],
-                     tui_async_pending_count(&async_state));
+                     tui_async_pending_count(&async_state),
+                     layout.compact_mode ? "compact layout" : "PgUp/PgDn + Up/Down scroll | Ctrl+L clear");
             spinner++;
         } else {
-            snprintf(status_text, sizeof(status_text), "Ready | Enter submit | Shift+Enter newline | Esc/Ctrl+C quit");
+            snprintf(status_text, sizeof(status_text), "Ready | Enter submit | Shift+Enter newline | Esc/Ctrl+C quit%s",
+                     layout.compact_mode ? " | compact layout" : "");
         }
         tui_render_screen(&layout, &history, &input, status_text);
 
