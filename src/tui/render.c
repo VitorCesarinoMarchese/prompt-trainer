@@ -5,8 +5,8 @@
 #include <string.h>
 
 static void draw_output_panel(const TuiLayout *layout, const TuiHistory *history) {
-    int inner_h = layout->output_inner_h;
-    int width = layout->output_inner_w;
+    int inner_h = tui_layout_output_view_rows(layout);
+    int width = tui_layout_output_view_width(layout);
     int total_rows;
     int start;
     int i;
@@ -47,8 +47,8 @@ static void draw_output_panel(const TuiLayout *layout, const TuiHistory *history
 
 static void draw_input_panel(const TuiLayout *layout, const TuiInputState *input) {
     int i;
-    int inner_h = layout->input_inner_h;
-    int inner_w = layout->input_inner_w;
+    int inner_h = tui_layout_input_view_rows(layout);
+    int inner_w = tui_layout_input_view_width(layout);
     int line = 0;
     int col = 0;
     int cursor_row = 0;

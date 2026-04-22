@@ -22,5 +22,9 @@ typedef struct {
 } TuiLayout;
 
 void tui_layout_compute(int rows, int cols, int input_lines, TuiLayout *out);
+int tui_layout_output_view_rows(const TuiLayout *layout);
+int tui_layout_output_view_width(const TuiLayout *layout);
+int tui_layout_input_view_rows(const TuiLayout *layout);
+int tui_layout_input_view_width(const TuiLayout *layout);
 
 #endif

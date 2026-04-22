@@ -34,6 +34,10 @@ int main(void) {
     expect_true(layout.output_inner_h >= 1, "output interior keeps at least one row");
     expect_true(layout.input_inner_h >= 1, "input interior keeps at least one row");
     expect_true(layout.output_inner_x >= 0 && layout.input_inner_x >= 0, "interior x should be non-negative");
+    expect_true(tui_layout_output_view_rows(&layout) >= 1, "output view rows helper should be positive");
+    expect_true(tui_layout_output_view_width(&layout) >= 1, "output view width helper should be positive");
+    expect_true(tui_layout_input_view_rows(&layout) >= 1, "input view rows helper should be positive");
+    expect_true(tui_layout_input_view_width(&layout) >= 1, "input view width helper should be positive");
 
     tui_layout_compute(4, 8, 2, &layout);
     expect_true(layout.rows == 4, "very small layout stores rows");
@@ -43,6 +47,8 @@ int main(void) {
     expect_true(layout.input_h >= 1, "tiny terminal should keep input visible");
     expect_true(layout.output_inner_w >= 1, "tiny terminal output interior width should be non-zero");
     expect_true(layout.input_inner_w >= 1, "tiny terminal input interior width should be non-zero");
+    expect_true(tui_layout_output_view_rows(&layout) >= 1, "tiny helper output rows should be positive");
+    expect_true(tui_layout_input_view_rows(&layout) >= 1, "tiny helper input rows should be positive");
 
     if (failures != 0) {
         fprintf(stderr, "Total failures: %d\n", failures);

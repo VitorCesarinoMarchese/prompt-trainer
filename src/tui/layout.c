@@ -76,3 +76,31 @@ void tui_layout_compute(int rows, int cols, int input_lines, TuiLayout *out) {
     out->status_y = output_h + input_h;
     out->status_h = status_h;
 }
+
+int tui_layout_output_view_rows(const TuiLayout *layout) {
+    if (layout == 0 || layout->output_inner_h < 1) {
+        return 1;
+    }
+    return layout->output_inner_h;
+}
+
+int tui_layout_output_view_width(const TuiLayout *layout) {
+    if (layout == 0 || layout->output_inner_w < 1) {
+        return 1;
+    }
+    return layout->output_inner_w;
+}
+
+int tui_layout_input_view_rows(const TuiLayout *layout) {
+    if (layout == 0 || layout->input_inner_h < 1) {
+        return 1;
+    }
+    return layout->input_inner_h;
+}
+
+int tui_layout_input_view_width(const TuiLayout *layout) {
+    if (layout == 0 || layout->input_inner_w < 1) {
+        return 1;
+    }
+    return layout->input_inner_w;
+}
