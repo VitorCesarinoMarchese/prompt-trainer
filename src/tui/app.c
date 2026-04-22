@@ -4,6 +4,7 @@
 #include "tui/history.h"
 #include "tui/input.h"
 #include "tui/layout.h"
+#include "tui/response_format.h"
 #include "tui/render.h"
 
 #include <curses.h>
@@ -33,33 +34,6 @@ static int map_curses_key(int key) {
             return TUI_KEY_ENTER;
         default:
             return key;
-    }
-}
-
-static void format_result_text(const TuiAsyncResult *result, char *out, size_t out_cap) {
-    size_t offset = 0;
-    int n = snprintf(out, out_cap, "Score %d/100 | clarity %d context %d constraints %d format %d examples %d",
-                     result->score.overall_score,
-                     result->score.dimension_scores[DIM_CLARITY],
-                     result->score.dimension_scores[DIM_CONTEXT],
-                     result->score.dimension_scores[DIM_CONSTRAINTS],
-                     result->score.dimension_scores[DIM_OUTPUT_FORMAT],
-                     result->score.dimension_scores[DIM_EXAMPLES]);
-    size_t i;
-    if (n < 0) {
-        out[0] = '\0';
-        return;
-    }
-    if ((size_t)n >= out_cap) {
-        return;
-    }
-    offset = (size_t)n;
-    for (i = 0; i < result->score.feedback_count && offset + 4 < out_cap; ++i) {
-        n = snprintf(out + offset, out_cap - offset, " | %s", result->score.feedback[i]);
-        if (n < 0 || (size_t)n >= out_cap - offset) {
-            break;
-        }
-        offset += (size_t)n;
     }
 }
 
@@ -117,7 +91,9 @@ int tui_run(void) {
         if (tui_async_poll(&async_state, &result) == 1) {
             char line[TUI_MAX_MESSAGE_TEXT];
             if (result.ok) {
-                format_result_text(&result, line, sizeof(line));
+                if (tui_format_score_response(&result.score, line, sizeof(line)) != 0) {
+                    snprintf(line, sizeof(line), "Error: failed to format response.");
+                }
                 tui_history_append(&history, TUI_MSG_RESULT, line);
             } else {
                 tui_history_append(&history, TUI_MSG_ERROR, result.error);

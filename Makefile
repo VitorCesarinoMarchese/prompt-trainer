@@ -13,6 +13,7 @@ TEST_HISTORY_TARGET := $(BIN_DIR)/test-tui-history
 TEST_INPUT_TARGET := $(BIN_DIR)/test-tui-input
 TEST_ASYNC_TARGET := $(BIN_DIR)/test-tui-async
 TEST_TEXTWRAP_TARGET := $(BIN_DIR)/test-tui-textwrap
+TEST_RESPONSE_FMT_TARGET := $(BIN_DIR)/test-tui-response-format
 
 .PHONY: all clean run test
 
@@ -48,6 +49,9 @@ $(OBJ_DIR)/tui_render.o: src/tui/render.c include/tui/render.h include/tui/layou
 $(OBJ_DIR)/tui_textwrap.o: src/tui/textwrap.c include/tui/textwrap.h | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
+$(OBJ_DIR)/tui_response_format.o: src/tui/response_format.c include/tui/response_format.h include/scorer.h | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
 $(OBJ_DIR)/test_scorer.o: tests/test_scorer.c include/scorer.h | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -66,7 +70,10 @@ $(OBJ_DIR)/test_tui_async.o: tests/test_tui_async.c include/tui/async.h include/
 $(OBJ_DIR)/test_tui_textwrap.o: tests/test_tui_textwrap.c include/tui/textwrap.h | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(TARGET): $(OBJ_DIR)/main.o $(OBJ_DIR)/scorer.o $(OBJ_DIR)/tui_app.o $(OBJ_DIR)/tui_layout.o $(OBJ_DIR)/tui_history.o $(OBJ_DIR)/tui_input.o $(OBJ_DIR)/tui_async.o $(OBJ_DIR)/tui_render.o $(OBJ_DIR)/tui_textwrap.o | $(BIN_DIR)
+$(OBJ_DIR)/test_tui_response_format.o: tests/test_tui_response_format.c include/tui/response_format.h include/scorer.h | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(TARGET): $(OBJ_DIR)/main.o $(OBJ_DIR)/scorer.o $(OBJ_DIR)/tui_app.o $(OBJ_DIR)/tui_layout.o $(OBJ_DIR)/tui_history.o $(OBJ_DIR)/tui_input.o $(OBJ_DIR)/tui_async.o $(OBJ_DIR)/tui_render.o $(OBJ_DIR)/tui_textwrap.o $(OBJ_DIR)/tui_response_format.o | $(BIN_DIR)
 	$(CC) $^ $(LDFLAGS) $(TUI_LDFLAGS) -o $@
 
 $(TEST_TARGET): $(OBJ_DIR)/test_scorer.o $(OBJ_DIR)/scorer.o | $(BIN_DIR)
@@ -87,16 +94,20 @@ $(TEST_ASYNC_TARGET): $(OBJ_DIR)/test_tui_async.o $(OBJ_DIR)/tui_async.o $(OBJ_D
 $(TEST_TEXTWRAP_TARGET): $(OBJ_DIR)/test_tui_textwrap.o $(OBJ_DIR)/tui_textwrap.o | $(BIN_DIR)
 	$(CC) $^ $(LDFLAGS) -o $@
 
+$(TEST_RESPONSE_FMT_TARGET): $(OBJ_DIR)/test_tui_response_format.o $(OBJ_DIR)/tui_response_format.o | $(BIN_DIR)
+	$(CC) $^ $(LDFLAGS) -o $@
+
 run: $(TARGET)
 	./$(TARGET)
 
-test: $(TARGET) $(TEST_TARGET) $(TEST_LAYOUT_TARGET) $(TEST_HISTORY_TARGET) $(TEST_INPUT_TARGET) $(TEST_ASYNC_TARGET) $(TEST_TEXTWRAP_TARGET)
+test: $(TARGET) $(TEST_TARGET) $(TEST_LAYOUT_TARGET) $(TEST_HISTORY_TARGET) $(TEST_INPUT_TARGET) $(TEST_ASYNC_TARGET) $(TEST_TEXTWRAP_TARGET) $(TEST_RESPONSE_FMT_TARGET)
 	./$(TEST_TARGET)
 	./$(TEST_LAYOUT_TARGET)
 	./$(TEST_HISTORY_TARGET)
 	./$(TEST_INPUT_TARGET)
 	./$(TEST_ASYNC_TARGET)
 	./$(TEST_TEXTWRAP_TARGET)
+	./$(TEST_RESPONSE_FMT_TARGET)
 	sh tests/test_cli.sh
 
 clean:
