@@ -15,6 +15,7 @@ Prompt Trainer is a dependency-free CLI app written in C that scores prompts and
 - Two modes:
   - single-command mode
   - interactive mode
+  - terminal UI mode (`--tui`)
 - Human-readable and JSON output
 
 ## Build
@@ -38,10 +39,33 @@ Interactive mode:
 ./bin/prompt-trainer --interactive
 ```
 
+TUI mode:
+```sh
+./bin/prompt-trainer --tui
+```
+
 JSON output:
 ```sh
 ./bin/prompt-trainer --json -p "Create a JSON response with exactly 3 objects."
 ```
+
+## TUI keyboard shortcuts
+- Enter: submit prompt
+- Shift+Enter: insert newline
+- Up/Down: recall input history (empty input) or scroll output
+- PgUp/PgDn: page scroll output
+- Ctrl+L: clear input
+- Esc or Ctrl+C: quit
+
+## TUI behavior notes
+- If evaluator is busy, new submissions are queued automatically.
+- On small terminals, TUI switches to compact layout mode.
+- `--tui` requires interactive TTY stdin/stdout.
+
+## TUI dependencies
+TUI mode links against:
+- `ncurses`
+- `pthread`
 
 ## Test
 ```sh
