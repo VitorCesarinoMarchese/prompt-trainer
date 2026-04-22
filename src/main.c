@@ -1,4 +1,5 @@
 #include "scorer.h"
+#include "tui/app.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,6 +12,7 @@ static void print_usage(const char *prog_name) {
             "Modes:\n"
             "  -p, --prompt TEXT   Evaluate prompt from argument\n"
             "  -i, --interactive   Read prompt from terminal/stdin\n"
+            "      --tui           Open terminal UI mode\n"
             "      --json          Output machine-readable JSON\n"
             "  -h, --help          Show this help\n",
             prog_name);
@@ -102,6 +104,7 @@ int main(int argc, char **argv) {
     PromptScore score;
     int as_json = 0;
     int interactive = 0;
+    int tui_mode = 0;
     char *prompt = NULL;
     int i = 0;
     int positional_start = -1;
@@ -109,6 +112,8 @@ int main(int argc, char **argv) {
     for (i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--json") == 0) {
             as_json = 1;
+        } else if (strcmp(argv[i], "--tui") == 0) {
+            tui_mode = 1;
         } else if (strcmp(argv[i], "--interactive") == 0 || strcmp(argv[i], "-i") == 0) {
             interactive = 1;
         } else if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
@@ -130,6 +135,11 @@ int main(int argc, char **argv) {
             positional_start = i;
             break;
         }
+    }
+
+    if (tui_mode) {
+        free(prompt);
+        return tui_run();
     }
 
     if (prompt == NULL && positional_start != -1) {
