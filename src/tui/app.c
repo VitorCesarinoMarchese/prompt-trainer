@@ -69,7 +69,6 @@ int tui_run(void) {
     TuiInputState input;
     TuiAsync async_state;
     int spinner = 0;
-    int loading = 0;
     const char spinner_chars[] = {'|', '/', '-', '\\'};
     char status_text[160];
     int running = 1;
@@ -109,7 +108,6 @@ int tui_run(void) {
 
         if (tui_async_poll(&async_state, &result) == 1) {
             char line[TUI_MAX_MESSAGE_TEXT];
-            loading = 0;
             if (result.ok) {
                 format_result_text(&result, line, sizeof(line));
                 tui_history_append(&history, TUI_MSG_RESULT, line);
@@ -119,8 +117,10 @@ int tui_run(void) {
             history.scroll = 0;
         }
 
-        if (loading) {
-            snprintf(status_text, sizeof(status_text), "Evaluating... %c  | PgUp/PgDn + Up/Down scroll | Ctrl+L clear", spinner_chars[spinner % 4]);
+        if (tui_async_is_busy(&async_state)) {
+            snprintf(status_text, sizeof(status_text), "Evaluating... %c | queue %d | PgUp/PgDn + Up/Down scroll | Ctrl+L clear",
+                     spinner_chars[spinner % 4],
+                     tui_async_pending_count(&async_state));
             spinner++;
         } else {
             snprintf(status_text, sizeof(status_text), "Ready | Enter submit | Shift+Enter newline | Esc/Ctrl+C quit");
@@ -158,11 +158,9 @@ int tui_run(void) {
         if (outcome.action == TUI_INPUT_ACTION_SUBMIT) {
             tui_history_append(&history, TUI_MSG_USER, submitted);
             if (tui_async_submit(&async_state, submitted) != 0) {
-                tui_history_append(&history, TUI_MSG_ERROR, "Evaluator busy. Wait current run.");
-            } else {
-                loading = 1;
-                spinner = 0;
+                tui_history_append(&history, TUI_MSG_ERROR, "Queue full. Prompt not submitted.");
             }
+            spinner = 0;
             history.scroll = 0;
         }
     }
