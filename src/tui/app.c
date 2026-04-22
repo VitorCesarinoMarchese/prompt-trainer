@@ -136,7 +136,8 @@ int tui_run(void) {
             continue;
         }
         if (outcome.scroll_page_delta != 0) {
-            tui_history_scroll_pages(&history, outcome.scroll_page_delta, layout.output_h > 2 ? layout.output_h - 2 : 1, max_scroll);
+            int page_rows = layout.output_inner_h > 0 ? layout.output_inner_h : 1;
+            tui_history_scroll_pages(&history, outcome.scroll_page_delta, page_rows, max_scroll);
         }
         if (outcome.scroll_line_delta != 0) {
             tui_history_scroll_lines(&history, outcome.scroll_line_delta, max_scroll);
