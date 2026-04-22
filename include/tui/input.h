@@ -45,6 +45,8 @@ void tui_input_init(TuiInputState *state);
 int tui_input_handle_key(TuiInputState *state, int key, TuiInputOutcome *outcome, char *submitted, size_t submitted_cap);
 int tui_input_line_count(const TuiInputState *state);
 int tui_input_visual_info(const TuiInputState *state, int width, TuiWrapCursorInfo *out);
+int tui_input_wrapped_rows(const TuiInputState *state, int width);
+int tui_input_visual_row(const TuiInputState *state, int width, int row_index, char *out, size_t out_cap);
 void tui_input_adjust_viewport(TuiInputState *state, int width, int visible_rows);
 int tui_input_view_top_row(const TuiInputState *state);
 

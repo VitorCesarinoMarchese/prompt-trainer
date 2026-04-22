@@ -29,6 +29,8 @@ int main(void) {
     expect_true(tui_textwrap_cursor_info("ab\ncd", 5, 5, 10, &info) == 0, "newline cursor info should compute");
     expect_true(info.cursor_row == 1, "newline cursor row");
     expect_true(info.cursor_col == 2, "newline cursor col");
+    expect_true(tui_textwrap_total_rows("ab\ncd", 5, 10) == 2, "total rows should handle newline");
+    expect_true(tui_textwrap_total_rows("abcdefghij", 10, 5) == 3, "total rows should handle hard wraps");
 
     expect_true(tui_textwrap_get_row("ab\ncdef", 7, 3, 1, row, sizeof(row)) == 1, "row extraction should work");
     expect_true(strcmp(row, "cde") == 0, "row extraction should honor width");

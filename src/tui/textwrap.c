@@ -7,6 +7,31 @@ static int normalized_width(int width) {
     return width;
 }
 
+int tui_textwrap_total_rows(const char *text, size_t text_len, int width) {
+    int row = 0;
+    int col = 0;
+    int w = normalized_width(width);
+    size_t i;
+
+    if (text == 0) {
+        return 1;
+    }
+
+    for (i = 0; i < text_len; ++i) {
+        if (text[i] == '\n') {
+            row++;
+            col = 0;
+            continue;
+        }
+        col++;
+        if (col >= w) {
+            row++;
+            col = 0;
+        }
+    }
+    return row + 1;
+}
+
 int tui_textwrap_cursor_info(const char *text, size_t text_len, size_t cursor_index, int width, TuiWrapCursorInfo *out) {
     int row = 0;
     int col = 0;
@@ -47,7 +72,7 @@ int tui_textwrap_cursor_info(const char *text, size_t text_len, size_t cursor_in
         out->cursor_row = row;
         out->cursor_col = col;
     }
-    out->total_rows = row + 1;
+    out->total_rows = tui_textwrap_total_rows(text, text_len, width);
     return 0;
 }
 

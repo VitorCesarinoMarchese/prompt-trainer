@@ -65,6 +65,10 @@ int main(void) {
     expect_true(visual.cursor_row == 2, "visual row should track wrapped cursor");
     expect_true(visual.cursor_col == 0, "visual col should reset after hard wrap");
     expect_true(visual.total_rows == 3, "visual total rows should include wraps");
+    expect_true(tui_input_wrapped_rows(&state, 5) == 3, "wrapped rows should match visual info");
+    memset(submitted, 0, sizeof(submitted));
+    expect_true(tui_input_visual_row(&state, 5, 1, submitted, sizeof(submitted)) == 1, "visual row extraction should work");
+    expect_true(strcmp(submitted, "fghij") == 0, "visual row extraction should keep wrapped row content");
     tui_input_adjust_viewport(&state, 5, 2);
     expect_true(tui_input_view_top_row(&state) == 1, "viewport should follow wrapped cursor");
 
