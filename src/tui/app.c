@@ -37,6 +37,19 @@ static int map_curses_key(int key) {
     }
 }
 
+static void tui_reflow_state(const TuiInputState *input, TuiLayout *layout, int *output_width, int *output_rows, int *max_scroll, int *rows, int *cols) {
+    int input_width_guess;
+    int input_visual_rows;
+
+    getmaxyx(stdscr, *rows, *cols);
+    input_width_guess = *cols >= 4 ? *cols - 2 : (*cols > 0 ? *cols : 1);
+    input_visual_rows = tui_input_wrapped_rows(input, input_width_guess);
+    tui_layout_compute(*rows, *cols, input_visual_rows, layout);
+    *output_width = tui_layout_output_view_width(layout);
+    *output_rows = tui_layout_output_view_rows(layout);
+    *max_scroll = 0;
+}
+
 int tui_run(void) {
     TuiLayout layout;
     TuiHistory history;
@@ -70,8 +83,6 @@ int tui_run(void) {
     while (running) {
         int rows = 0;
         int cols = 0;
-        int input_width_guess;
-        int input_visual_rows;
         int ch;
         TuiAsyncResult result;
         TuiInputOutcome outcome;
@@ -80,13 +91,8 @@ int tui_run(void) {
         int output_width;
         int output_rows;
 
-        getmaxyx(stdscr, rows, cols);
-        input_width_guess = cols >= 4 ? cols - 2 : (cols > 0 ? cols : 1);
-        input_visual_rows = tui_input_wrapped_rows(&input, input_width_guess);
-        tui_layout_compute(rows, cols, input_visual_rows, &layout);
+        tui_reflow_state(&input, &layout, &output_width, &output_rows, &max_scroll, &rows, &cols);
         tui_input_adjust_viewport(&input, tui_layout_input_view_width(&layout), tui_layout_input_view_rows(&layout));
-        output_width = tui_layout_output_view_width(&layout);
-        output_rows = tui_layout_output_view_rows(&layout);
         max_scroll = tui_history_max_scroll_rows(&history, output_width, output_rows);
         if (history.scroll > max_scroll) {
             history.scroll = max_scroll;
@@ -103,6 +109,10 @@ int tui_run(void) {
                 tui_history_append(&history, TUI_MSG_ERROR, result.error);
             }
             history.scroll = 0;
+            max_scroll = tui_history_max_scroll_rows(&history, output_width, output_rows);
+            if (history.scroll > max_scroll) {
+                history.scroll = max_scroll;
+            }
         }
 
         if (tui_async_is_busy(&async_state)) {
