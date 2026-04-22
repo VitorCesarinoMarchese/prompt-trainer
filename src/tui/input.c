@@ -181,3 +181,10 @@ int tui_input_line_count(const TuiInputState *state) {
     }
     return lines;
 }
+
+int tui_input_visual_info(const TuiInputState *state, int width, TuiWrapCursorInfo *out) {
+    if (state == NULL || out == NULL) {
+        return -1;
+    }
+    return tui_textwrap_cursor_info(state->buffer, state->len, state->cursor, width, out);
+}

@@ -25,6 +25,7 @@ int main(void) {
     TuiInputState state;
     TuiInputOutcome outcome;
     char submitted[TUI_MAX_INPUT];
+    TuiWrapCursorInfo visual;
 
     tui_input_init(&state);
     type_text(&state, "hello");
@@ -57,6 +58,13 @@ int main(void) {
     memset(&outcome, 0, sizeof(outcome));
     tui_input_handle_key(&state, TUI_KEY_PGUP, &outcome, submitted, sizeof(submitted));
     expect_true(outcome.scroll_page_delta == 1, "page up should request upward page scroll");
+
+    tui_input_init(&state);
+    type_text(&state, "abcdefghij");
+    expect_true(tui_input_visual_info(&state, 5, &visual) == 0, "visual info should compute");
+    expect_true(visual.cursor_row == 2, "visual row should track wrapped cursor");
+    expect_true(visual.cursor_col == 0, "visual col should reset after hard wrap");
+    expect_true(visual.total_rows == 3, "visual total rows should include wraps");
 
     memset(&outcome, 0, sizeof(outcome));
     tui_input_handle_key(&state, 3, &outcome, submitted, sizeof(submitted));

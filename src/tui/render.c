@@ -53,9 +53,10 @@ static void draw_input_panel(const TuiLayout *layout, const TuiInputState *input
     int col = 0;
     int cursor_row = 0;
     int cursor_col = 0;
+    TuiWrapCursorInfo visual;
     size_t idx;
     int start_row = 0;
-    int total_lines = tui_input_line_count(input);
+    int total_lines;
     int visible_lines = inner_h > 0 ? inner_h : 1;
 
     for (i = 0; i < layout->input_h; ++i) {
@@ -69,15 +70,18 @@ static void draw_input_panel(const TuiLayout *layout, const TuiInputState *input
         return;
     }
 
+    if (tui_input_visual_info(input, inner_w, &visual) != 0) {
+        visual.cursor_row = 0;
+        visual.cursor_col = 0;
+        visual.total_rows = 1;
+    }
+    total_lines = visual.total_rows;
+
     if (total_lines > visible_lines) {
         start_row = total_lines - visible_lines;
     }
 
     for (idx = 0; idx < input->len; ++idx) {
-        if (idx == input->cursor) {
-            cursor_row = line;
-            cursor_col = col;
-        }
         if (input->buffer[idx] == '\n') {
             line++;
             col = 0;
@@ -94,10 +98,8 @@ static void draw_input_panel(const TuiLayout *layout, const TuiInputState *input
         col++;
     }
 
-    if (input->cursor == input->len) {
-        cursor_row = line;
-        cursor_col = col;
-    }
+    cursor_row = visual.cursor_row;
+    cursor_col = visual.cursor_col;
 
     if (cursor_row < start_row) {
         cursor_row = start_row;

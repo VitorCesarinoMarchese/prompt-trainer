@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "tui/state.h"
+#include "tui/textwrap.h"
 
 enum {
     TUI_KEY_UP = 1001,
@@ -42,5 +43,6 @@ typedef struct {
 void tui_input_init(TuiInputState *state);
 int tui_input_handle_key(TuiInputState *state, int key, TuiInputOutcome *outcome, char *submitted, size_t submitted_cap);
 int tui_input_line_count(const TuiInputState *state);
+int tui_input_visual_info(const TuiInputState *state, int width, TuiWrapCursorInfo *out);
 
 #endif

@@ -66,7 +66,7 @@ $(OBJ_DIR)/test_tui_async.o: tests/test_tui_async.c include/tui/async.h include/
 $(OBJ_DIR)/test_tui_textwrap.o: tests/test_tui_textwrap.c include/tui/textwrap.h | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(TARGET): $(OBJ_DIR)/main.o $(OBJ_DIR)/scorer.o $(OBJ_DIR)/tui_app.o $(OBJ_DIR)/tui_layout.o $(OBJ_DIR)/tui_history.o $(OBJ_DIR)/tui_input.o $(OBJ_DIR)/tui_async.o $(OBJ_DIR)/tui_render.o | $(BIN_DIR)
+$(TARGET): $(OBJ_DIR)/main.o $(OBJ_DIR)/scorer.o $(OBJ_DIR)/tui_app.o $(OBJ_DIR)/tui_layout.o $(OBJ_DIR)/tui_history.o $(OBJ_DIR)/tui_input.o $(OBJ_DIR)/tui_async.o $(OBJ_DIR)/tui_render.o $(OBJ_DIR)/tui_textwrap.o | $(BIN_DIR)
 	$(CC) $^ $(LDFLAGS) $(TUI_LDFLAGS) -o $@
 
 $(TEST_TARGET): $(OBJ_DIR)/test_scorer.o $(OBJ_DIR)/scorer.o | $(BIN_DIR)
@@ -78,7 +78,7 @@ $(TEST_LAYOUT_TARGET): $(OBJ_DIR)/test_tui_layout.o $(OBJ_DIR)/tui_layout.o | $(
 $(TEST_HISTORY_TARGET): $(OBJ_DIR)/test_tui_history.o $(OBJ_DIR)/tui_history.o | $(BIN_DIR)
 	$(CC) $^ $(LDFLAGS) -o $@
 
-$(TEST_INPUT_TARGET): $(OBJ_DIR)/test_tui_input.o $(OBJ_DIR)/tui_input.o | $(BIN_DIR)
+$(TEST_INPUT_TARGET): $(OBJ_DIR)/test_tui_input.o $(OBJ_DIR)/tui_input.o $(OBJ_DIR)/tui_textwrap.o | $(BIN_DIR)
 	$(CC) $^ $(LDFLAGS) -o $@
 
 $(TEST_ASYNC_TARGET): $(OBJ_DIR)/test_tui_async.o $(OBJ_DIR)/tui_async.o $(OBJ_DIR)/scorer.o | $(BIN_DIR)
