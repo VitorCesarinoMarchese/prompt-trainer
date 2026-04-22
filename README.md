@@ -61,6 +61,24 @@ JSON output:
 - If evaluator is busy, new submissions are queued automatically.
 - On small terminals, TUI switches to compact layout mode.
 - `--tui` requires interactive TTY stdin/stdout.
+- Input textbox wraps long lines to panel width and keeps cursor aligned with typing position.
+- Response panel uses structured output with score header, dimension list, and weak-dimension improvements only.
+
+Example TUI response block:
+```text
+Score 100/100
+
+- Clarity: 25
+- Context: 30
+- Constraints: 0
+- Format: 30
+- Examples: 0
+
+Improvements:
+1. Improve clarity: use specific action verbs and remove vague terms.
+2. Add context: define role, audience, and domain/background.
+3. Add constraints: include explicit limits, rules, or measurable requirements.
+```
 
 ## TUI dependencies
 TUI mode links against:
