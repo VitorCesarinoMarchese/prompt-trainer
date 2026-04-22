@@ -49,15 +49,13 @@ static void draw_input_panel(const TuiLayout *layout, const TuiInputState *input
     int i;
     int inner_h = tui_layout_input_view_rows(layout);
     int inner_w = tui_layout_input_view_width(layout);
-    int line = 0;
-    int col = 0;
     int cursor_row = 0;
     int cursor_col = 0;
     TuiWrapCursorInfo visual;
-    size_t idx;
     int start_row = 0;
     int total_lines;
     int visible_lines = inner_h > 0 ? inner_h : 1;
+    char line[TUI_MAX_INPUT];
 
     for (i = 0; i < layout->input_h; ++i) {
         mvhline(layout->input_y + i, 0, ' ', layout->cols);
@@ -87,21 +85,15 @@ static void draw_input_panel(const TuiLayout *layout, const TuiInputState *input
         start_row = 0;
     }
 
-    for (idx = 0; idx < input->len; ++idx) {
-        if (input->buffer[idx] == '\n') {
-            line++;
-            col = 0;
+    for (i = 0; i < visible_lines; ++i) {
+        int row_index = start_row + i;
+        if (row_index >= total_lines) {
+            break;
+        }
+        if (tui_input_visual_row(input, inner_w, row_index, line, sizeof(line)) != 1) {
             continue;
         }
-        if (line >= start_row && line < start_row + visible_lines && col < inner_w) {
-            mvaddch(layout->input_inner_y + (line - start_row), layout->input_inner_x + col, input->buffer[idx]);
-        }
-        if (col + 1 >= inner_w) {
-            line++;
-            col = 0;
-            continue;
-        }
-        col++;
+        mvprintw(layout->input_inner_y + i, layout->input_inner_x, "%-*.*s", inner_w, inner_w, line);
     }
 
     cursor_row = visual.cursor_row;
