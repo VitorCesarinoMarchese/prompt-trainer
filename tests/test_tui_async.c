@@ -1,5 +1,6 @@
 #include "tui/async.h"
 
+#include <sys/select.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -26,6 +27,7 @@ int main(void) {
 
     memset(&result, 0, sizeof(result));
     for (tries = 0; tries < 10000; ++tries) {
+        struct timeval tv;
         if (tui_async_poll(&async_state, &result) == 1) {
             if (!got_first) {
                 got_first = 1;
@@ -34,6 +36,9 @@ int main(void) {
                 break;
             }
         }
+        tv.tv_sec = 0;
+        tv.tv_usec = 1000;
+        (void)select(0, NULL, NULL, NULL, &tv);
     }
     expect_true(tries < 10000, "async queued results should arrive");
     expect_true(got_first == 1, "first result should arrive");
