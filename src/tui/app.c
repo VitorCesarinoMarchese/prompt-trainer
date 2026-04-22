@@ -70,6 +70,8 @@ int tui_run(void) {
     while (running) {
         int rows = 0;
         int cols = 0;
+        int input_width_guess;
+        int input_visual_rows;
         int ch;
         TuiAsyncResult result;
         TuiInputOutcome outcome;
@@ -79,7 +81,9 @@ int tui_run(void) {
         int output_rows;
 
         getmaxyx(stdscr, rows, cols);
-        tui_layout_compute(rows, cols, tui_input_line_count(&input), &layout);
+        input_width_guess = cols >= 4 ? cols - 2 : (cols > 0 ? cols : 1);
+        input_visual_rows = tui_input_wrapped_rows(&input, input_width_guess);
+        tui_layout_compute(rows, cols, input_visual_rows, &layout);
         tui_input_adjust_viewport(&input, tui_layout_input_view_width(&layout), tui_layout_input_view_rows(&layout));
         output_width = tui_layout_output_view_width(&layout);
         output_rows = tui_layout_output_view_rows(&layout);
