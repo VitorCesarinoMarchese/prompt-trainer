@@ -69,6 +69,8 @@ int main(void) {
     memset(submitted, 0, sizeof(submitted));
     expect_true(tui_input_visual_row(&state, 5, 1, submitted, sizeof(submitted)) == 1, "visual row extraction should work");
     expect_true(strcmp(submitted, "fghij") == 0, "visual row extraction should keep wrapped row content");
+    expect_true(strlen(submitted) <= 5, "visual row extraction should not exceed render width");
+    expect_true(tui_input_visual_row(&state, 5, 99, submitted, sizeof(submitted)) == 0, "out-of-range visual row should fail");
     tui_input_adjust_viewport(&state, 5, 2);
     expect_true(tui_input_view_top_row(&state) == 1, "viewport should follow wrapped cursor");
 
