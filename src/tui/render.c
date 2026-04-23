@@ -1,7 +1,6 @@
 #include "tui/render.h"
 
 #include <curses.h>
-#include <stdio.h>
 #include <string.h>
 
 static void draw_output_panel(const TuiLayout *layout,
@@ -76,12 +75,6 @@ static void draw_input_panel(const TuiLayout *layout,
     visual.cursor_row = 0;
     visual.cursor_col = 0;
     visual.total_rows = 1;
-  }
-  FILE *dbg = fopen("/tmp/tui_debug.log", "a");
-  if (dbg) {
-    fprintf(dbg, "input_inner_y=%d input_inner_x=%d LINES=%d COLS=%d\n",
-            layout->input_inner_y, layout->input_inner_x, LINES, COLS);
-    fclose(dbg);
   }
   total_lines = visual.total_rows;
   start_row = tui_input_view_top_row(input);
