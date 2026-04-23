@@ -73,6 +73,10 @@ int main(void) {
     expect_true(tui_input_visual_row(&state, 5, 99, submitted, sizeof(submitted)) == 0, "out-of-range visual row should fail");
     tui_input_adjust_viewport(&state, 5, 2);
     expect_true(tui_input_view_top_row(&state) == 1, "viewport should follow wrapped cursor");
+    tui_input_adjust_viewport(&state, 3, 2);
+    expect_true(tui_input_view_top_row(&state) == 2, "viewport should recompute when width shrinks");
+    tui_input_adjust_viewport(&state, 8, 2);
+    expect_true(tui_input_view_top_row(&state) == 0, "viewport should clamp when width grows");
 
     tui_input_handle_key(&state, TUI_KEY_LEFT, &outcome, submitted, sizeof(submitted));
     tui_input_handle_key(&state, TUI_KEY_LEFT, &outcome, submitted, sizeof(submitted));

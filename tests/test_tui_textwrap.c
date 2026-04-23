@@ -31,9 +31,14 @@ int main(void) {
     expect_true(info.cursor_col == 2, "newline cursor col");
     expect_true(tui_textwrap_total_rows("ab\ncd", 5, 10) == 2, "total rows should handle newline");
     expect_true(tui_textwrap_total_rows("abcdefghij", 10, 5) == 3, "total rows should handle hard wraps");
+    expect_true(tui_textwrap_total_rows("abcdef", 6, 3) == 3, "exact-width text should keep deterministic trailing row");
 
     expect_true(tui_textwrap_get_row("ab\ncdef", 7, 3, 1, row, sizeof(row)) == 1, "row extraction should work");
     expect_true(strcmp(row, "cde") == 0, "row extraction should honor width");
+    expect_true(tui_textwrap_get_row("abcdef", 6, 3, 1, row, sizeof(row)) == 1, "exact-width middle row should render");
+    expect_true(strcmp(row, "def") == 0, "exact-width middle row content should match");
+    expect_true(tui_textwrap_get_row("abcdef", 6, 3, 2, row, sizeof(row)) == 1, "exact-width trailing row should exist");
+    expect_true(strcmp(row, "") == 0, "exact-width trailing row should be empty");
     expect_true(tui_textwrap_get_row("ab", 2, 5, 3, row, sizeof(row)) == 0, "row extraction out-of-range should fail");
 
     if (failures != 0) {
