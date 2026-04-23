@@ -62,6 +62,7 @@ JSON output:
 - On small terminals, TUI switches to compact layout mode.
 - `--tui` requires interactive TTY stdin/stdout.
 - Input textbox wraps long lines to panel width and keeps cursor aligned with typing position.
+- Input viewport auto-adjusts after terminal resize so cursor stays visible in wrapped multiline prompts.
 - Response panel uses structured output with score header, dimension list, and weak-dimension improvements only.
 
 Example TUI response block:
